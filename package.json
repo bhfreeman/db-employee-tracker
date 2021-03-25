@@ -17,5 +17,9 @@
   "bugs": {
     "url": "https://github.com/bhfreeman/db-employee-tracker/issues"
   },
-  "homepage": "https://github.com/bhfreeman/db-employee-tracker#readme"
+  "homepage": "https://github.com/bhfreeman/db-employee-tracker#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "inquirer": "^8.0.0"
+  }
 }
