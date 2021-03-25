@@ -1,6 +1,8 @@
 const express = require('express')
 const inquirer = require('inquirer')
 
+const dbCredentials = require('./config')
+
 const app = express();
 const PORT = process.env.PORT || PORT;
 
