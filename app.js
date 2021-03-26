@@ -1,15 +1,9 @@
-const express = require('express')
 const inquirer = require('inquirer')
+const mysql = require('mysql');
 
 const dbCredentials = require('./config')
 
-const app = express();
-const PORT = process.env.PORT || PORT;
-
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
+//Setting up database connection
+var connection = mysql.createConnection(dbCredentials);
 
 
-
-
-app.listen(PORT, () => console.log(`App listening on PORT ${PORT}`));
