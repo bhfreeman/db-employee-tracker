@@ -1,0 +1,32 @@
+from searchByDepartment
+    // pool.query('SELECT name FROM department', (err, results, fields) => {
+    //     let departments = results.map((el)=>el.name);
+    //     console.log(departments);
+    //     init();
+    // });
+
+
+// function searchByDepartment(){
+//     const departments = [];
+//     connection.query('SELECT name FROM department;')
+//     .on('error', function(err){})
+//     .on('fields', function(fields){})
+//     .on('result',(row)=> {
+//         // let departments = row.map((el)=>el.name);
+//         departments.push(row);
+// })
+// .on('end', function(){
+//     inquirer.prompt([
+//         {type: 'list',
+//         name: 'department',
+//         message: 'Which department did you want to look for?',
+//         choices: departments,
+//     }]).then((data) => {
+//         const query = 'SELECT employee.first_name as "First Name", employee.last_name as "Last Name", department.name as "Department" FROM role INNER JOIN employee ON employee.role_id = role.id INNER JOIN department on department.id = role.department_id WHERE department.name = "?"; ';
+//         connection.query(query,data.departments, (err,response) => {
+//             if (err) throw err;
+//             console.table(response);
+//         })
+//     })
+//     })
+// }
