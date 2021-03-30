@@ -30,3 +30,21 @@ from searchByDepartment
 //     })
 //     })
 // }
+
+
+From addEmployee function
+    // const search = await connection.query('SELECT first_name, last_name FROM employee INNER JOIN role on role.id = employee.role_id WHERE role.title = "Manager";');
+    // const managers = search.map(el => el.first_name + " " + el.last_name);
+    // const roleSearch = await connection.query('SELECT title FROM role;');
+    // const roles = [...new Set(roleSearch.map(el=> el.title))];
+        // const managerQuestion = await inquirer.prompt([
+    //         {
+    //         type: 'list',
+    //         name: 'manager',
+    //         message: 'Who is the manager of this employee?',
+    //         choices: managers
+    //     }
+    // ])
+    // console.log(questions)
+
+    // connection.query('INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ();')
