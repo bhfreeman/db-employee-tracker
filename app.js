@@ -3,25 +3,13 @@ const inquirer = require('inquirer')
 // const mysql = require('mysql');
 const connection = require('./db');
 
-//This file is ignored by git
-// const dbCredentials = require('./config')
-
 //Questions Arrays for inquirer
 const start_question = [{
     type: 'list',
     name: 'selection',
     message: 'What would you like to do?',
-    choices: ["View all Employees", "View All Employees by Department", "View all employees by Role", "Add Employee", "Remove Employee", "Update Employee", "Add Department", "Remove Department", "Add Role", "Remove Role", "Exit"]
+    choices: ["View All Employees", "View All Employees by Department", "View All Employees by Role", "View All Employees by Manager","Add Employee", "Remove Employee", "Update Employee","View Department Budget", "Add Department", "Remove Department", "Add Role", "Remove Role", "Exit"]
 }]
-//Setting up database connection
-// const connection = mysql.createConnection(dbCredentials);
-// connection.connect((err)=> {
-//     if (err) throw err;
-//     console.log('connected');
-//     init();
-// })
-
-// const pool = mysql.createPool(dbCredentials);
 
 // Functions for searching, adding, updating, etc
 function searchAll(){
@@ -53,12 +41,12 @@ async function searchByRole() {
     const roles = search.map((el)=> el.title);
     await inquirer.prompt([
             {type: 'list',
-            name: 'department',
+            name: 'role',
             message: 'Which role did you want to look for?',
             choices: roles,
         }]).then((data)=> {
             const query = 'SELECT employee.first_name as "First Name", employee.last_name as "Last Name", department.name as "Department" FROM role INNER JOIN employee ON employee.role_id = role.id INNER JOIN department on department.id = role.department_id WHERE role.title = ?; ';
-            connection.query(query,data.department, (error, results, fields)=> {
+            connection.query(query,data.role, (error, results, fields)=> {
                 console.table(results);
                 init();
             })
@@ -122,6 +110,27 @@ async function removeEmployee(){
     init();
 };
 
+async function viewByManager(){
+
+}
+
+async function viewDepartmentBudget(){
+    const deptSearch = await connection.query('SELECT name FROM department;')
+    const dept = await inquirer.prompt([
+        {
+            type: 'list',
+            name: 'name',
+            message: 'What department do you want the budget from?',
+            choices: deptSearch.map(({name})=> (name))
+        }
+    ])
+    const numOfEmployee = await connection.query('SELECT count(employee.role_id) AS "count", role_id FROM employee INNER JOIN role on role.id = employee.role_id INNER JOIN department on department.id = role.department_id WHERE department.name = ? GROUP BY role_id;', dept.name);
+    const roleID = [numOfEmployee.map((el)=> el.role_id)];
+    const salaries = await connection.query('SELECT id, title, salary FROM role WHERE id IN (?) GROUP BY id;', roleID);
+    
+    init();
+}
+
 async function updateEmployee(){
 
 };
@@ -139,7 +148,18 @@ async function addDepartment(){
 };
 
 async function removeDepartment(){
-    
+    const deptID = await connection.query('SELECT id, name FROM department;');
+    const deptArray = [...new Set(deptID.map(dept=> ({id: dept.id, name: dept.name})))];
+    const questions = await inquirer.prompt([
+        {
+            type: 'list',
+            name: 'department_id',
+            message: 'What department do you want to remove?',
+            choices: deptArray.map(({id,name}) => ({name,value:id}))
+        }
+    ])
+    const removeDept = await connection.query('DELETE FROM department WHERE id= ?;', questions.department_id);
+    init();
 };
 
 async function addRole(){
@@ -170,7 +190,6 @@ async function addRole(){
 async function removeRole(){
     const deptID = await connection.query('SELECT id, name FROM department;');
     const deptArray = [...new Set(deptID.map(dept=> ({id: dept.id, name: dept.name})))];
-    console.log(deptArray)
     const questions = await inquirer.prompt([
         {
             type: 'list',
@@ -181,15 +200,19 @@ async function removeRole(){
     ])
     const roles = await connection.query('SELECT id, title FROM role WHERE department_id = ?;', questions.department_id);
     const roleArray = [... new Set(roles.map(role => ({id: role.id, title: role.title})))];
+    const roleCheck = roleArray.map(role => role.title)
     const role = await inquirer.prompt([
         {
             type: 'list',
-            name: 'role_id',
+            name: 'role_title',
             message: 'Choose the role you would like to remove from this department.',
-            choices: roleArray.map(({id,title}) => ({title, value:id}))
+            choices: roleCheck
         }
     ])
-    console.log(roleArray);
+    const id = roleArray.filter(obj => {
+        return obj.title === role.role_title;
+    })
+    const removeRole = await connection.query('DELETE FROM role WHERE role.id = ? ', id.id);
     init();
 };
 
@@ -206,6 +229,9 @@ function init(){
             case "View all employees by Role":
                 searchByRole();
                 break;
+            case "View All Employees by Manager":
+                viewByManager();
+                break;
             case "Add Employee":
                 addEmployee();
                 break;
@@ -214,6 +240,9 @@ function init(){
                 break;
             case "Update Employee":
                 updateEmployee();
+                break;
+            case "View Department Budget":
+                viewDepartmentBudget();
                 break;
             case "Add Department":
                 addDepartment();
