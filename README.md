@@ -9,4 +9,4 @@ Simple CLI to take in user info on employees, their roles, and their departments
 [Github](https://github.com/bhfreeman/db-employee-tracker)
 
 ## Youtube Link to Walkthough
-[Walkthrough]()
+[Walkthrough](https://youtu.be/YpcCVxUQGKk)
