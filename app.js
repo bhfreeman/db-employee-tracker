@@ -80,21 +80,27 @@ async function addEmployee(){
     const roleQuery = 'SELECT role.title FROM role INNER JOIN department on department.id = role.department_id WHERE department.id = ?;';
     const roleSearch = await connection.query(roleQuery, departmentID[0].id);
     const roles = [...new Set(roleSearch.map(el=>el.title))]
-    const setRole = await inquirer.prompt([
-        {
-            type: 'list',
-            name: 'role',
-            message: 'What is the role of this employee?',
-            choices: roles
-        }
-    ]);
-    const employeeManager = await connection.query('SELECT role.id FROM role INNER JOIN department ON department.id = role.department_id WHERE role.title = "Manager" AND department.id = ?;',[departmentID[0].id])
+    if(roles.length === 0) {
+        console.log('There are no roles for this department, create a role and then return to add employee.');
+        init();
+    }else {
+        const setRole = await inquirer.prompt([
+            {
+                type: 'list',
+                name: 'role',
+                message: 'What is the role of this employee?',
+                choices: roles
+            }
+        ]);
+        const employeeManager = await connection.query('SELECT role.id FROM role INNER JOIN department ON department.id = role.department_id WHERE role.title = "Manager" AND department.id = ?;',[departmentID[0].id])
     const roleID = await connection.query('SELECT role.id FROM role WHERE role.title = ? AND department_id = ?',[setRole.role, departmentID[0].id]);
     let manager = null;
     if(employeeManager[0]) manager = employeeManager[0].id;
     await connection.query('INSERT INTO employee (first_name, last_name, role_id, manager_id)  VALUES (?,?,?,?);',[questions.first, questions.last, roleID[0].id, manager]);
 
-    init();
+    init();    
+    }
+
 };
 
 async function removeEmployee(){
@@ -229,7 +235,7 @@ async function removeRole(){
     const id = roleArray.filter(obj => {
         return obj.title === role.role_title;
     })
-    const removeRole = await connection.query('DELETE FROM role WHERE role.id = ? ', id.id);
+    const removeRole = await connection.query('DELETE * FROM role WHERE role.id = ? ', id.id);
     init();
 };
 
