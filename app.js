@@ -90,7 +90,9 @@ async function addEmployee(){
     ]);
     const employeeManager = await connection.query('SELECT role.id FROM role INNER JOIN department ON department.id = role.department_id WHERE role.title = "Manager" AND department.id = ?;',[departmentID[0].id])
     const roleID = await connection.query('SELECT role.id FROM role WHERE role.title = ? AND department_id = ?',[setRole.role, departmentID[0].id]);
-    await connection.query('INSERT INTO employee (first_name, last_name, role_id, manager_id)  VALUES (?,?,?,?);',[questions.first, questions.last, roleID[0].id, employeeManager[0].id]);
+    let manager = null;
+    if(employeeManager[0]) manager = employeeManager[0].id;
+    await connection.query('INSERT INTO employee (first_name, last_name, role_id, manager_id)  VALUES (?,?,?,?);',[questions.first, questions.last, roleID[0].id, manager]);
 
     init();
 };
