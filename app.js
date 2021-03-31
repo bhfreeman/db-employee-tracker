@@ -235,13 +235,13 @@ function init(){
     inquirer.prompt(start_question)
     .then((data) => {
         switch (data.selection) {
-            case "View all Employees":
+            case "View All Employees":
                 searchAll();
                 break;
             case "View All Employees by Department":
                 searchByDepartment();
                 break;
-            case "View all employees by Role":
+            case "View All Employees by Role":
                 searchByRole();
                 break;
             case "View All Employees by Manager":
