@@ -112,6 +112,7 @@ async function removeEmployee(){
 
 async function viewByManager(){
 
+    init();
 }
 
 async function viewDepartmentBudget(){
@@ -127,12 +128,26 @@ async function viewDepartmentBudget(){
     const numOfEmployee = await connection.query('SELECT count(employee.role_id) AS "count", role_id FROM employee INNER JOIN role on role.id = employee.role_id INNER JOIN department on department.id = role.department_id WHERE department.name = ? GROUP BY role_id;', dept.name);
     const roleID = [numOfEmployee.map((el)=> el.role_id)];
     const salaries = await connection.query('SELECT id, title, salary FROM role WHERE id IN (?) GROUP BY id;', roleID);
-    
+    // console.log(numOfEmployee);
+    // console.log(salaries);
+    let deptBudget = 0;
+    numOfEmployee.forEach(employee => {
+        const role = salaries.filter(roleObj => roleObj.id === employee.role_id)
+        // console.log((role[0].salary));
+        // console.log(employee.count);
+        deptBudget += role[0].salary * employee.count;
+        // if(employee.role_id === role.id ){
+        //     return deptBudget+= employee.count * role.salary;
+        // }
+    });
+    console.log(`The ${dept.name} departments budget is ${deptBudget}`);
+
     init();
 }
 
 async function updateEmployee(){
 
+    init();
 };
 
 async function addDepartment(){
